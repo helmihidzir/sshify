@@ -33,9 +33,9 @@ module Sshify
         when "See config"
           watch_config(output)
         when "Create new config"
-          create_config(output)
+          create_config
         when "Add new server"
-          add_server(output)
+          add_server
         when "Remove server"
           remove_server(output)
         end
@@ -54,8 +54,8 @@ module Sshify
         @cmd.run("cat #{@config.location_paths.first}/servers.yml")
       end
 
-      def create_config(output)
-        project_name = prompt.ask("What is name for project")
+      def create_config
+        project_name = prompt.ask("What is name for server")
         user = prompt.ask("What is name for user")
         server_ip = prompt.ask("What is server ip")
 
@@ -66,7 +66,7 @@ module Sshify
         @cmd.run("cat #{@config.location_paths.first}/servers.yml")
       end
 
-      def add_server(output)
+      def add_server
         @config.read if @config.persisted?
 
         project_name = prompt.ask("What is name for project")

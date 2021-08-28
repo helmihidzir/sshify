@@ -18,7 +18,20 @@ module Sshify
     end
     map %w(--version -v) => :version
 
-    desc 'config', 'Command description...'
+    desc 'connect [-c]', 'connect to server'
+    method_option :help, aliases: '-h', type: :boolean,
+                         desc: 'Display usage information'
+    def connect(*)
+      if options[:help]
+        invoke :help, ['connect']
+      else
+        require_relative 'commands/connect'
+        Sshify::Commands::Connect.new(options).execute
+      end
+    end
+    map %w(--connect -c) => :connect
+
+    desc 'config [-cf]', 'manage ssh connections'
     method_option :help, aliases: '-h', type: :boolean,
                          desc: 'Display usage information'
     def config(*)
@@ -29,5 +42,6 @@ module Sshify
         Sshify::Commands::Config.new(options).execute
       end
     end
+    map %w(--config -cf) => :config
   end
 end
