@@ -3,6 +3,7 @@
 require_relative '../command'
 require "tty-prompt"
 require "tty-config"
+require "tty-command"
 
 module Sshify
   module Commands
@@ -14,15 +15,18 @@ module Sshify
         @config.filename = "servers"
         @config.extname = ".yml"
         @config.append_path Dir.home
+
+        @cmd = TTY::Command.new
       end
 
       def execute(input: $stdin, output: $stdout)
         @config ||= self.class.new(@options).config
 
-        selection = prompt.select("Choose your destiny?") do |menu|
+        selection = prompt.select("Select one") do |menu|
           menu.choice "See config"
           menu.choice "Create new config"
           menu.choice "Add new server"
+          menu.choice "Remove server"
         end
 
         case selection
@@ -32,17 +36,22 @@ module Sshify
           create_config(output)
         when "Add new server"
           add_server(output)
+        when "Remove server"
+          remove_server(output)
         end
       end
 
       private
 
       def watch_config(output)
+        @config.read if @config.persisted?
+
         unless @config.exist?
           output.puts 'No config set'
           return
         end
-        output.puts @config.read(format: :yaml)
+
+        @cmd.run("cat #{@config.location_paths.first}/servers.yml")
       end
 
       def create_config(output)
@@ -53,7 +62,8 @@ module Sshify
         @config.set(project_name, :user, value: user)
         @config.set(project_name, :server_ip, value: server_ip)
         @config.write(force: true)
-        output.puts @config.read(format: :yaml)
+
+        @cmd.run("cat #{@config.location_paths.first}/servers.yml")
       end
 
       def add_server(output)
@@ -66,7 +76,27 @@ module Sshify
         @config.append(user, to: [project_name, :user])
         @config.append(server_ip, to: [project_name, :server_ip])
         @config.write(force: true)
-        output.puts @config.read(format: :yaml)
+
+        @cmd.run("cat #{@config.location_paths.first}/servers.yml")
+      end
+
+      def remove_server(output)
+        @config.read if @config.persisted?
+
+        selection = prompt.select("Select one to delete") do |menu|
+          @config.read.keys.each do |server_name|
+            menu.choice server_name
+          end
+        end
+
+        answer = prompt.yes?("Are you sure?")
+        if answer == true
+          @config.delete(selection)
+          @config.write(force: true)
+          output.puts "#{selection} deleted"
+        end
+
+        @cmd.run("cat #{@config.location_paths.first}/servers.yml")
       end
     end
   end
