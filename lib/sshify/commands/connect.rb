@@ -11,7 +11,7 @@ module Sshify
         @options = options
 
         @config = TTY::Config.new
-        @config.filename = "servers"
+        @config.filename = "sshify-config"
         @config.extname = ".yml"
         @config.append_path Dir.home
       end

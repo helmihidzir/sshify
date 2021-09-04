@@ -12,7 +12,7 @@ module Sshify
         @options = options
 
         @config = TTY::Config.new
-        @config.filename = "servers"
+        @config.filename = "sshify-config"
         @config.extname = ".yml"
         @config.append_path Dir.home
 
@@ -51,7 +51,7 @@ module Sshify
           return
         end
 
-        @cmd.run("cat #{@config.location_paths.first}/servers.yml")
+        @cmd.run("cat #{@config.location_paths.first}/sshify-config.yml")
       end
 
       def create_config
@@ -63,7 +63,7 @@ module Sshify
         @config.set(project_name, :server_ip, value: server_ip)
         @config.write(force: true)
 
-        @cmd.run("cat #{@config.location_paths.first}/servers.yml")
+        @cmd.run("cat #{@config.location_paths.first}/sshify-config.yml")
       end
 
       def add_server
@@ -77,7 +77,7 @@ module Sshify
         @config.append(server_ip, to: [project_name, :server_ip])
         @config.write(force: true)
 
-        @cmd.run("cat #{@config.location_paths.first}/servers.yml")
+        @cmd.run("cat #{@config.location_paths.first}/sshify-config.yml")
       end
 
       def remove_server(output)
@@ -96,7 +96,7 @@ module Sshify
           output.puts "#{selection} deleted"
         end
 
-        @cmd.run("cat #{@config.location_paths.first}/servers.yml")
+        @cmd.run("cat #{@config.location_paths.first}/sshify-config.yml")
       end
     end
   end
