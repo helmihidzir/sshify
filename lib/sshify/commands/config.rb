@@ -21,6 +21,7 @@ module Sshify
 
       def execute(input: $stdin, output: $stdout)
         @config ||= self.class.new(@options).config
+        @config.read if @config.persisted?
 
         selection = prompt.select("Select one") do |menu|
           menu.choice "See config"

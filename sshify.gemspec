@@ -20,4 +20,10 @@ Gem::Specification.new do |spec|
   spec.bindir        = "exe"
   spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
   spec.require_paths = ["lib"]
+
+  spec.add_dependency "tty-config", "~> 0.5.0"
+  spec.add_dependency "tty-prompt", "~> 0.23.1"
+  spec.add_dependency "tty-command", "~> 0.10.1"
+  spec.add_dependency "rake", "~> 12.0"
+  spec.add_dependency "rspec", "~> 3.0"
 end
